@@ -52,6 +52,9 @@ The Canteen Ordering Platform is a web-based application that allows users to br
 ### Screenshot of database
 ![Database Screenshot](https://raw.githubusercontent.com/Larry-has/canteen-ordering-system/main/database_screenshot.png)
 
+###Screenshot of website
+![Website Screenshot](https://github.com/Larry-has/canteen-ordering-system/blob/main/website_screenshot.png)
+
 ## Technical Architecture
 
 ### Authentication Flow
