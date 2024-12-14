@@ -47,7 +47,9 @@ The Canteen Ordering Platform is a web-based application that allows users to br
   - Firebase SDK
   - Papaparse (CSV parsing)
 
-## Screenshot of database
+##Screenshots
+
+### Screenshot of database
 ![Database Screenshot](https://raw.githubusercontent.com/Larry-has/canteen-ordering-system/main/orders_database_screenshot.png)
 
 ## Technical Architecture
