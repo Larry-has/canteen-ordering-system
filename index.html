@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canteen Ordering Platform</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      header {
+        background-color: #333;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 2rem;
+      }
+
+      .menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .menu-item {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        width: 250px;
+      }
+
+      .menu-item h3 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .menu-item p {
+        margin: 0.5rem 0;
+      }
+
+      .cart {
+        margin-top: 2rem;
+        border-top: 2px solid #ddd;
+        padding-top: 1rem;
+      }
+
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .cart-item p {
+        margin: 0;
+      }
+
+      .cart-total {
+        font-weight: bold;
+        margin-top: 1rem;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0.5rem 0;
+      }
+
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-width: 400px;
+        margin: auto;
+        padding: 2rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      input,
+      select {
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      .error {
+        color: red;
+        margin-bottom: 1rem;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      #user-info {
+        margin-top: 2rem;
+      }
+
+      #orders-section {
+        margin-top: 2rem;
+      }
+
+      .order {
+        background-color: #f0f0f0;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      #toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+      }
+
+      .toast {
+        background-color: #4caf50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+
+      .toast.show {
+        opacity: 1;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Canteen Ordering Platform</h1>
+    </header>
+
+    <div class="container">
+      <section id="auth-section">
+        <div id="login-form">
+          <h2>Login</h2>
+          <form id="login-form-element">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" required />
+
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" required />
+
+            <div id="login-error" class="error"></div>
+
+            <button type="submit">Login</button>
+          </form>
+          <p>
+            Don't have an account? <a href="#" id="show-register">Register</a>
+          </p>
+        </div>
+
+        <div id="registration-form" class="hidden">
+          <h2>User Registration</h2>
+          <form id="registration-form-element">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required />
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required />
+
+            <label for="preferences">Dietary Preferences:</label>
+            <select id="preferences" required>
+              <option value="">Select Dietary Preference</option>
+              <option value="None">None</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Gluten-Free">Gluten-Free</option>
+              <option value="Kosher">Kosher</option>
+              <option value="Halal">Halal</option>
+              <option value="No Nuts">No Nuts</option>
+            </select>
+
+            <div id="register-error" class="error"></div>
+
+            <button type="submit">Register</button>
+          </form>
+          <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+        </div>
+      </section>
+
+      <section id="menu-section" class="hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div>
+            <p
+              id="user-greeting"
+              style="font-size: 1.5rem; margin-bottom: 0.5rem"
+            ></p>
+            <p id="loyalty-points" style="color: #666"></p>
+          </div>
+          <button id="logout">Logout</button>
+        </div>
+        <h2>Menu</h2>
+        <div class="menu" id="menu"></div>
+      </section>
+
+      <section class="cart hidden" id="cart-section">
+        <h2>Your Cart</h2>
+        <div id="cart"></div>
+        <p class="cart-total" id="cart-total">Total: $0.00</p>
+        <button id="place-order" disabled>Place Order</button>
+      </section>
+
+      <section class="orders hidden" id="orders-section">
+        <h2>Your Order History</h2>
+        <div id="orders"></div>
+      </section>
+
+      <div id="user-info">
+        <p id="user-greeting"></p>
+        <p id="loyalty-points"></p>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+        collection,
+        getDocs,
+        addDoc,
+        query,
+        where,
+        orderBy,
+      } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyB8l-6pDEjTmY_JRu3-KJTSM2bPdLUv1zw",
+        authDomain: "canteen-app-d8969.firebaseapp.com",
+        projectId: "canteen-app-d8969",
+        storageBucket: "canteen-app-d8969.firebasestorage.app",
+        messagingSenderId: "992490985078",
+        appId: "1:992490985078:web:ca737c9325c3e625283157",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const firestore = getFirestore(app);
+
+      async function fetchMenuItems() {
+        const productsRef = collection(firestore, "products");
+        const querySnapshot = await getDocs(productsRef);
+
+        const menuItems = [];
+        querySnapshot.forEach((doc) => {
+          const item = doc.data(); // Get the document data
+          // Ensure we have all necessary properties
+          const menuItem = {
+            id: doc.id, // Use Firestore document ID as the unique identifier
+            name: item.name || "Unnamed Item",
+            price: item.price || 0,
+            description: item.description || "No description available",
+            category: item.category || "Uncategorized",
+          };
+          menuItems.push(menuItem);
+        });
+
+        return menuItems;
+      }
+
+      // Function to show toast notification
+      function showToast(message, type = "success") {
+        const toastContainer = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.classList.add("toast", type);
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        // Show toast
+        setTimeout(() => {
+          toast.classList.add("show");
+        }, 10);
+
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => {
+            toastContainer.removeChild(toast);
+          }, 300);
+        }, 3000);
+      }
+
+      // Function to save cart to localStorage
+      function saveCartToLocalStorage() {
+        localStorage.setItem("cartItems", JSON.stringify(cart));
+      }
+
+      // Function to load cart from localStorage
+      function loadCartFromLocalStorage() {
+        const savedCart = localStorage.getItem("cartItems");
+        if (savedCart) {
+          // Clear existing cart and parse saved items
+          cart.length = 0;
+          const parsedCart = JSON.parse(savedCart);
+          cart.push(...parsedCart);
+          renderCart();
+        }
+      }
+
+      function showLoading() {
+        console.log("Showing loading overlay");
+        const loadingOverlay = document.getElementById("loading-overlay");
+        if (loadingOverlay) {
+          loadingOverlay.style.display = "flex";
+        }
+      }
+
+      function hideLoading() {
+        console.log("Hiding loading overlay");
+        const loadingOverlay = document.getElementById("loading-overlay");
+        if (loadingOverlay) {
+          loadingOverlay.style.display = "none";
+        }
+      }
+
+      // Menu Items
+      const menuItems = [
+        {
+          id: 1,
+          name: "Burger",
+          price: 5.99,
+          category: "Main",
+          description: "A juicy burger.",
+        },
+        {
+          id: 2,
+          name: "Pizza",
+          price: 8.99,
+          category: "Main",
+          description: "Cheesy pizza with toppings.",
+        },
+        {
+          id: 3,
+          name: "Salad",
+          price: 4.99,
+          category: "Sides",
+          description: "Fresh garden salad.",
+        },
+        {
+          id: 4,
+          name: "Soda",
+          price: 1.99,
+          category: "Drinks",
+          description: "Cold refreshing soda.",
+        },
+      ];
+
+      const cart = [];
+
+      // Toggle between Login and Register forms
+      document
+        .getElementById("show-register")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          document.getElementById("login-form").classList.add("hidden");
+          document
+            .getElementById("registration-form")
+            .classList.remove("hidden");
+        });
+
+      document.getElementById("show-login").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("registration-form").classList.add("hidden");
+        document.getElementById("login-form").classList.remove("hidden");
+      });
+
+      // Registration Handler
+      document
+        .getElementById("registration-form-element")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          showLoading();
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const username = document.getElementById("username").value;
+          const preferences = document.getElementById("preferences").value;
+          const registerError = document.getElementById("register-error");
+
+          // Clear previous errors
+          registerError.textContent = "";
+
+          // Password validation
+          if (password.length < 6) {
+            registerError.textContent =
+              "Password must be at least 6 characters long.";
+            hideLoading();
+            return;
+          }
+
+          try {
+            // Create user with Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+
+            // Save additional user info to Firestore
+            await setDoc(doc(firestore, "users", userCredential.user.uid), {
+              username: username,
+              email: email,
+              preferences: preferences,
+            });
+          } catch (error) {
+            // Handle Errors here
+            registerError.textContent = error.message;
+            hideLoading(); // Hide if there's an error
+          } finally {
+            hideLoading();
+          }
+        });
+
+      // Login Handler
+      document
+        .getElementById("login-form-element")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          showLoading(); // Call showLoading immediately
+
+          const email = document.getElementById("login-email").value;
+          const password = document.getElementById("login-password").value;
+          const loginError = document.getElementById("login-error");
+
+          loginError.textContent = "";
+
+          try {
+            await signInWithEmailAndPassword(auth, email, password);
+          } catch (error) {
+            loginError.textContent = error.message;
+            hideLoading(); // Hide if there's an error
+          }
+        });
+
+      document.getElementById("logout").addEventListener("click", async () => {
+        try {
+          showLoading();
+          await signOut(auth);
+          localStorage.removeItem("cartItems"); // Clear cart on logout
+        } catch (error) {
+          console.error("Logout error", error);
+        } finally {
+          hideLoading();
+        }
+      });
+
+      // Logout Handler
+      document.getElementById("logout").addEventListener("click", async () => {
+        try {
+          showLoading();
+          await signOut(auth);
+        } catch (error) {
+          console.error("Logout error", error);
+        } finally {
+          hideLoading();
+        }
+      });
+
+      // Authentication State Observer
+      onAuthStateChanged(auth, async (user) => {
+        hideLoading(); // Always hide loading when auth state changes
+
+        if (user) {
+          document.getElementById("auth-section").style.display = "none";
+          document.getElementById("menu-section").style.display = "block";
+          document.getElementById("cart-section").style.display = "block";
+
+          // Fetch and display the user's name
+          const userGreeting = document.getElementById("user-greeting");
+          try {
+            const userDoc = await getDoc(doc(firestore, "users", user.uid));
+            if (userDoc.exists()) {
+              const username = userDoc.data().username || "User";
+              userGreeting.textContent = `Hello, ${username}!`;
+            } else {
+              userGreeting.textContent = "Hello, User!";
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            userGreeting.textContent = "Hello, User!";
+          }
+
+          fetchAndDisplayOrders();
+          renderMenu();
+          loadCartFromLocalStorage(); // Load cart items after authentication
+          fetchAndDisplayLoyaltyPoints();
+        } else {
+          document.getElementById("auth-section").style.display = "block";
+          document.getElementById("menu-section").style.display = "none";
+          document.getElementById("cart-section").style.display = "none";
+        }
+      });
+
+      // Function to fetch and display loyalty points
+      async function fetchAndDisplayLoyaltyPoints() {
+        try {
+          const userId = auth.currentUser.uid;
+          const userRef = doc(firestore, "users", userId);
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const loyaltyPoints = userData.loyaltyPoints || 0;
+
+            document.getElementById(
+              "loyalty-points"
+            ).textContent = `Loyalty Points: ${loyaltyPoints}`;
+          }
+        } catch (error) {
+          console.error("Error fetching loyalty points:", error);
+        }
+      }
+
+      // Render Menu
+      async function renderMenu() {
+        const menuDiv = document.getElementById("menu");
+        menuDiv.innerHTML = "";
+
+        try {
+          const menuItems = await fetchMenuItems();
+
+          menuItems.forEach((item) => {
+            const menuItem = document.createElement("div");
+            menuItem.classList.add("menu-item");
+            menuItem.innerHTML = `
+        <h3>${item.name} - $${Number(item.price).toFixed(2)}</h3>
+        <p>${item.description}</p>
+        <p>Category: ${item.category}</p>
+        <button data-id="${item.id}" class="add-to-cart">Add to Cart</button>
+      `;
+            menuDiv.appendChild(menuItem);
+          });
+
+          // Add event delegation for add to cart
+          menuDiv.addEventListener("click", (event) => {
+            if (event.target.classList.contains("add-to-cart")) {
+              const itemId = event.target.getAttribute("data-id");
+              window.addToCart(itemId);
+            }
+          });
+        } catch (error) {
+          console.error("Error fetching menu items:", error);
+        }
+      }
+
+      // Render Cart
+      function renderCart() {
+        const cartDiv = document.getElementById("cart");
+        const cartTotal = document.getElementById("cart-total");
+        const placeOrderButton = document.getElementById("place-order");
+
+        cartDiv.innerHTML = "";
+        let total = 0;
+        let itemCount = 0;
+
+        cart.forEach((item) => {
+          const cartItem = document.createElement("div");
+          cartItem.classList.add("cart-item");
+          cartItem.innerHTML = `
+      <p>${item.name} x ${item.quantity}</p>
+      <p>$${(Number(item.price) * item.quantity).toFixed(2)}</p>
+      <button data-id="${item.id}" class="remove-from-cart">Remove</button>
+    `;
+          cartDiv.appendChild(cartItem);
+          total += Number(item.price) * item.quantity;
+          itemCount += item.quantity;
+        });
+
+        // Add event delegation for remove from cart
+        cartDiv.addEventListener("click", (event) => {
+          if (event.target.classList.contains("remove-from-cart")) {
+            const itemId = event.target.getAttribute("data-id");
+            window.removeFromCart(itemId);
+          }
+        });
+
+        cartTotal.textContent = `Total: $${total.toFixed(
+          2
+        )} (${itemCount} items)`;
+        placeOrderButton.disabled = cart.length === 0;
+
+        // Update cart title with item count
+        const cartSection = document.getElementById("cart-section");
+        cartSection.querySelector(
+          "h2"
+        ).innerHTML = `Your Cart (${cart.length})`;
+      }
+
+      // Add to Cart
+      window.addToCart = async function (id) {
+        try {
+          const menuItems = await fetchMenuItems();
+          const item = menuItems.find((item) => item.id === id);
+
+          if (!item) {
+            console.error("Item not found:", id);
+            return;
+          }
+
+          const cartItem = cart.find((cartItem) => cartItem.id === id);
+
+          if (cartItem) {
+            cartItem.quantity += 1;
+          } else {
+            cart.push({
+              ...item,
+              quantity: 1,
+              id: item.id,
+            });
+          }
+
+          renderCart();
+          saveCartToLocalStorage();
+        } catch (error) {
+          console.error("Error adding to cart:", error);
+        }
+      };
+
+      // Remove from Cart
+      window.removeFromCart = function (id) {
+        const cartItem = cart.find((item) => item.id === id);
+
+        if (cartItem) {
+          if (cartItem.quantity > 1) {
+            cartItem.quantity -= 1;
+          } else {
+            const index = cart.findIndex((item) => item.id === id);
+            if (index !== -1) {
+              cart.splice(index, 1);
+            }
+          }
+        }
+
+        renderCart();
+        saveCartToLocalStorage();
+      };
+
+      // Function to update user's loyalty points
+      async function updateUserLoyaltyPoints(userId, amountSpent) {
+        try {
+          const userRef = doc(firestore, "users", userId);
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const currentPoints = userData.loyaltyPoints || 0;
+
+            // Assuming 1 point for every dollar spent
+            const newPoints = currentPoints + Math.floor(amountSpent);
+
+            await setDoc(
+              userRef,
+              { loyaltyPoints: newPoints },
+              { merge: true }
+            );
+          }
+        } catch (error) {
+          console.error("Error updating loyalty points:", error);
+        }
+      }
+
+      function renderOrders(orders) {
+        const ordersDiv = document.getElementById("orders");
+        ordersDiv.innerHTML = ""; // Clear any previous content
+
+        orders.forEach((order, index) => {
+          const orderDiv = document.createElement("div");
+          orderDiv.classList.add("order");
+          orderDiv.innerHTML = `
+      <h3>Order #${index + 1}</h3>
+      <p>Status: ${order.status}</p>
+      <p>Total Price: $${order.totalPrice.toFixed(2)}</p>
+      <p>Order Date: ${new Date(order.createdAt).toLocaleString()}</p>
+    `;
+          ordersDiv.appendChild(orderDiv);
+        });
+
+        // Display total number of orders
+        const ordersSection = document.getElementById("orders-section");
+        ordersSection.querySelector(
+          "h2"
+        ).innerHTML = `Your Order History (${orders.length})`;
+      }
+
+      async function fetchAndDisplayOrders() {
+        try {
+          const ordersQuery = query(
+            collection(firestore, "orders"),
+            orderBy("createdAt", "desc") // Sort by created_at field in descending order
+          );
+          const ordersSnapshot = await getDocs(ordersQuery);
+          const orders = [];
+
+          ordersSnapshot.forEach((doc) => {
+            const order = doc.data();
+            orders.push(order);
+          });
+
+          // Make the orders-section visible after fetching data
+          document.getElementById("orders-section").classList.remove("hidden");
+
+          // Now render the orders
+          renderOrders(orders);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        }
+      }
+
+      async function placeOrder() {
+        try {
+          showLoading();
+
+          const userId = auth.currentUser.uid;
+          const orderDate = new Date().toISOString();
+          const totalPrice = parseFloat(
+            document.getElementById("cart-total").textContent.split("$")[1]
+          );
+
+          const order = {
+            userId: userId,
+            items: cart,
+            totalPrice: totalPrice,
+            status: "Preparing",
+            createdAt: orderDate,
+          };
+
+          await addDoc(collection(firestore, "orders"), order);
+
+          // Update user's loyalty points
+          updateUserLoyaltyPoints(userId, totalPrice);
+
+          // Clear cart
+          cart.length = 0;
+          renderCart();
+          localStorage.removeItem("cartItems");
+
+          showToast("Order placed successfully!");
+        } catch (error) {
+          console.error("Error placing order:", error);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      // Place Order
+      document
+        .getElementById("place-order")
+        .addEventListener("click", placeOrder);
+
+      // Ensure loading is hidden on initial page load
+      document.addEventListener("DOMContentLoaded", () => {
+        hideLoading();
+      });
+
+      // Prevent Flash of Login Page
+      document.getElementById("auth-section").classList.add("hidden");
+    </script>
+  </body>
+</html>
