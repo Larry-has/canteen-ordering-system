@@ -523,9 +523,26 @@
         try {
           showLoading();
           await signOut(auth);
-          localStorage.removeItem("cartItems"); // Clear cart on logout
+
+          // Hide all sections except auth-section
+          document.getElementById("auth-section").style.display = "block";
+          document.getElementById("menu-section").style.display = "none";
+          document.getElementById("cart-section").style.display = "none";
+          document.getElementById("orders-section").style.display = "none";
+
+          // Clear cart
+          cart.length = 0;
+          renderCart();
+          localStorage.removeItem("cartItems");
+
+          // Reset user greeting and loyalty points
+          document.getElementById("user-greeting").textContent = "";
+          document.getElementById("loyalty-points").textContent = "";
+
+          showToast("Logged out successfully");
         } catch (error) {
           console.error("Logout error", error);
+          showToast("Error logging out", "error");
         } finally {
           hideLoading();
         }
