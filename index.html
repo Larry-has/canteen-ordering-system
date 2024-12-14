@@ -11,68 +11,78 @@
       <h1>Canteen Ordering Platform</h1>
     </header>
 
-   <div class="auth-container">
-        <div class="auth-wrapper">
-            <div class="auth-image">
-                <div class="auth-image-content">
-                    <h2>Welcome to Canteen Ordering</h2>
-                    <p>Discover delicious meals tailored to your dietary preferences</p>
-                </div>
-            </div>
-            <div class="auth-form">
-                <div class="auth-toggle">
-                    <button id="login-tab" class="active">Login</button>
-                    <button id="register-tab">Register</button>
-                </div>
+  <div class="container">
+      <section id="auth-section">
+        <div id="login-form">
+          <h2>Login</h2>
+          <form id="login-form-element">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" required />
 
-                <form id="login-form" class="auth-form-content">
-                    <div class="form-group">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="login-email" class="form-input" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="login-password" class="form-input" placeholder="Password" required>
-                    </div>
-                    <div id="login-error" class="error-message"></div>
-                    <button type="submit" class="btn">Login</button>
-                    <div class="form-footer">
-                        <a href="#">Forgot Password?</a>
-                    </div>
-                </form>
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" required />
 
-                <form id="register-form" class="auth-form-content" style="display: none;">
-                    <div class="form-group">
-                        <i class="fas fa-user input-icon"></i>
-                        <input type="text" id="username" class="form-input" placeholder="Username" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="email" class="form-input" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="password" class="form-input" placeholder="Password" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-utensils input-icon"></i>
-                        <select id="preferences" class="form-input" required>
-                            <option value="">Select Dietary Preference</option>
-                            <option value="None">None</option>
-                            <option value="Vegetarian">Vegetarian</option>
-                            <option value="Vegan">Vegan</option>
-                            <option value="Gluten-Free">Gluten-Free</option>
-                            <option value="Kosher">Kosher</option>
-                            <option value="Halal">Halal</option>
-                            <option value="No Nuts">No Nuts</option>
-                        </select>
-                    </div>
-                    <div id="register-error" class="error-message"></div>
-                    <button type="submit" class="btn btn-secondary">Register</button>
-                </form>
-            </div>
+            <div id="login-error" class="error"></div>
+
+            <button type="submit">Login</button>
+          </form>
+          <p>
+            Don't have an account? <a href="#" id="show-register">Register</a>
+          </p>
         </div>
-    </div>
+
+        <div id="registration-form" class="hidden">
+          <h2>User Registration</h2>
+          <form id="registration-form-element">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required />
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required />
+
+            <label for="preferences">Dietary Preferences:</label>
+            <select id="preferences" required>
+              <option value="">Select Dietary Preference</option>
+              <option value="None">None</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Gluten-Free">Gluten-Free</option>
+              <option value="Kosher">Kosher</option>
+              <option value="Halal">Halal</option>
+              <option value="No Nuts">No Nuts</option>
+            </select>
+
+            <div id="register-error" class="error"></div>
+
+            <button type="submit">Register</button>
+          </form>
+          <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+        </div>
+      </section>
+
+      <section id="menu-section" class="hidden">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div>
+            <p
+              id="user-greeting"
+              style="font-size: 1.5rem; margin-bottom: 0.5rem"
+            ></p>
+            <p id="loyalty-points" style="color: #666"></p>
+          </div>
+          <button id="logout">Logout</button>
+        </div>
+        <h2>Menu</h2>
+        <div class="menu" id="menu"></div>
+      </section>
 
       <section id="menu-section" class="hidden">
         <div
